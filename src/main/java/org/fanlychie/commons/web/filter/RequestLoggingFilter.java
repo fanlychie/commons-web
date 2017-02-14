@@ -52,6 +52,8 @@ public class RequestLoggingFilter implements Filter {
                         logger.debug("param: --- 文件上传 ---");
                     }
                     break;
+                default:
+                    logger.debug(getRequestMessage(request, null));
             }
             chain.doFilter(request, resp);
         }
