@@ -31,8 +31,9 @@ public class RequestLoggingFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws IOException, ServletException {
+        HttpServletRequest request = (HttpServletRequest) req;
+        HttpContext.init(request, (HttpServletResponse) resp);
         if (logger.isInfoEnabled()) {
-            HttpServletRequest request = (HttpServletRequest) req;
             switch (request.getMethod().toUpperCase()) {
                 case "GET":
                 case "DELETE":
@@ -55,9 +56,8 @@ public class RequestLoggingFilter implements Filter {
                 default:
                     logger.debug(getRequestMessage(request, null));
             }
-            chain.doFilter(request, resp);
         }
-        HttpContext.init((HttpServletRequest) req, (HttpServletResponse) resp);
+        chain.doFilter(request, resp);
     }
 
     @Override
