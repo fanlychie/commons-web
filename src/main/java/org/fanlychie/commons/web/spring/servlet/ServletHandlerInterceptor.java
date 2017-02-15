@@ -89,23 +89,6 @@ public abstract class ServletHandlerInterceptor extends HandlerInterceptorAdapte
         return uri.matches(expression.replace("*", "\\S*"));
     }
 
-    /**
-     * 向客户端写出文本消息
-     *
-     * @param message 消息内容
-     * @return 固定返回 false
-     * @throws Exception
-     */
-    protected boolean writeTextMessage(String message) throws Exception {
-        HttpServletResponse response = HttpContext.getResponse();
-        response.setDateHeader("Expires", 0);
-        response.setHeader("Pragma", "no-cache");
-        response.setHeader("Cache-Control", "no-cache");
-        response.setContentType("text/html;charset=utf-8");
-        response.getWriter().write(message);
-        return false;
-    }
-
     // 跳过 URL
     private boolean skipUrl(String uri) {
         if (!CollectionUtils.isEmpty(skipUrls)) {

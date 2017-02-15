@@ -1,8 +1,11 @@
 package org.fanlychie.commons.web.servelt;
 
+import org.fanlychie.commons.web.exception.RuntimeCastException;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -136,6 +139,33 @@ public final class HttpContext {
             return ip;
         }
         return request.getRemoteAddr();
+    }
+
+    /**
+     * 向客户端写出响应消息
+     *
+     * @param message 消息内容
+     */
+    public static void writeResponseMessage(String message) {
+        writeResponseMessage(getResponse(), message);
+    }
+
+    /**
+     * 向客户端写出响应消息
+     *
+     * @param response HttpServletResponse 对象
+     * @param message  消息内容
+     */
+    public static void writeResponseMessage(HttpServletResponse response, String message) {
+        response.setDateHeader("Expires", 0);
+        response.setHeader("Pragma", "no-cache");
+        response.setHeader("Cache-Control", "no-cache");
+        response.setContentType("text/html;charset=utf-8");
+        try {
+            response.getWriter().write(message);
+        } catch (IOException e) {
+            throw new RuntimeCastException(e);
+        }
     }
 
     private static boolean isFound(String ip) {
