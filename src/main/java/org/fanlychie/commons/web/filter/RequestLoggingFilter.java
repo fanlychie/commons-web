@@ -37,24 +37,24 @@ public class RequestLoggingFilter implements Filter {
             switch (request.getMethod().toUpperCase()) {
                 case "GET":
                 case "DELETE":
-                    logger.debug(getRequestMessage(request, getQueryParamString(request)));
+                    logger.info(getRequestMessage(request, getQueryParamString(request)));
                     break;
                 case "PUT":
                 case "POST":
                     if (isApplicationJsonRequest(request)) {
                         request = new RecyclableHttpServletRequest(request);
-                        logger.debug(getRequestMessage(request, null));
-                        logger.debug("param: " + getJsonParamString(request));
+                        logger.info(getRequestMessage(request, null));
+                        logger.info("param: " + getJsonParamString(request));
                     } else if (isUrlencodedFormRequest(request)) {
-                        logger.debug(getRequestMessage(request, null));
-                        logger.debug("param: " + getFormParamString(request));
+                        logger.info(getRequestMessage(request, null));
+                        logger.info("param: " + getFormParamString(request));
                     } else if (isFileUploadRequest(request)) {
-                        logger.debug(getRequestMessage(request, null));
-                        logger.debug("param: --- 文件上传 ---");
+                        logger.info(getRequestMessage(request, null));
+                        logger.info("param: --- 文件上传 ---");
                     }
                     break;
                 default:
-                    logger.debug(getRequestMessage(request, null));
+                    logger.info(getRequestMessage(request, null));
             }
         }
         chain.doFilter(request, resp);
