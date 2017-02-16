@@ -132,7 +132,14 @@ public final class RequestContext {
      */
     public static String getServerPath() {
         HttpServletRequest request = getRequest();
-        return request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/";
+        StringBuilder builder = new StringBuilder();
+        builder.append(request.getScheme()).append("://").append(request.getServerName());
+        int port = request.getServerPort();
+        if (port != 80) {
+            builder.append(":").append(port);
+        }
+        builder.append(request.getContextPath()).append("/");
+        return builder.toString();
     }
 
     // 私有化构造器
