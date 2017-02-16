@@ -2,7 +2,6 @@ package org.fanlychie.commons.web.filter;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.fanlychie.commons.web.servlet.ClientInformation;
 import org.fanlychie.commons.web.servlet.RecyclableHttpServletRequest;
 import org.fanlychie.commons.web.servlet.RequestContext;
 import org.fanlychie.commons.web.servlet.ResponseContext;
@@ -170,7 +169,7 @@ public class RequestLoggingFilter implements Filter {
         }
         message.append(" ")
                 .append(request.getProtocol()).append(" ")
-                .append(ClientInformation.getIPAddress(request));
+                .append(RequestContext.getClientIPAddress());
         String contentType = request.getHeader("Content-Type");
         String contentLength = request.getHeader("Content-Length");
         String contentEncoding = request.getHeader("Content-Encoding");
