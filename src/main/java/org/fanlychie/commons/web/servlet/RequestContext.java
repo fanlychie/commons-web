@@ -126,6 +126,15 @@ public final class RequestContext {
     }
 
     /**
+     * 获取客户端 IP 地址
+     *
+     * @return 返回客户端 IP 地址
+     */
+    public static String getClientIPAddress() {
+        return ClientInformation.getIPAddress(getRequest());
+    }
+
+    /**
      * 获取服务器路径地址
      *
      * @return 返回服务器路径地址
