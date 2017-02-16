@@ -15,77 +15,81 @@ import javax.servlet.http.HttpServletResponse;
 public class ExceptionLoggingHandler extends SimpleMappingExceptionResolver {
 
     /**
-     * 默认错误处理
+     * 默认异常处理方式
      */
-    private String defaultErrorResolver;
+    private String defaultExceptionResolver;
 
     /**
-     * JSON 结果消息
+     * 异常返回的 JSON 信息
      */
-    private String jsonErrorMessage;
+    private String exceptionJsonMessage;
 
     /**
-     * JSON 结果映射
+     * 异常返回 JSON 结果的位置映射集合
      */
-    private String[] jsonErrorMappings;
+    private String[] exceptionJsonMappings;
 
     /**
-     * 视图结果映射
+     * 异常返回视图的位置映射集合
      */
-    private String[] viewErrorMappings;
+    private String[] exceptionViewMappings;
 
     @Override
     protected ModelAndView doResolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
         logger.error("「捕捉到异常」", ex);
         HandlerMethod method = (HandlerMethod) handler;
         String location = method.getBeanType().getName() + "." + method.getMethod().getName();
-        if (defaultErrorResolver == null || defaultErrorResolver.equals("view")) {
-            if (matchLocation(location, jsonErrorMappings)) {
+        if (defaultExceptionResolver == null || defaultExceptionResolver.equals("view")) {
+            if (matchLocation(location, exceptionJsonMappings)) {
                 return writeJSONMessage(response);
             }
-        } else if (defaultErrorResolver.equals("json") && !matchLocation(location, viewErrorMappings)) {
+        } else if (defaultExceptionResolver.equals("json") && !matchLocation(location, exceptionViewMappings)) {
             return writeJSONMessage(response);
         }
         return super.doResolveException(request, response, handler, ex);
     }
 
     /**
-     * 设置默认错误处理, 取值 [json/view]
+     * 设置默认异常处理方式, 取值 [json/view]
+     * json: 表示异常时默认返回 JSON 字符串结果
+     * view: 表示异常时默认返回视图页面的结果
      *
-     * @param defaultErrorResolver 默认错误处理
+     * @param defaultExceptionResolver 默认异常处理方式
      */
-    public void setDefaultErrorResolver(String defaultErrorResolver) {
-        this.defaultErrorResolver = defaultErrorResolver;
+    public void setDefaultExceptionResolver(String defaultExceptionResolver) {
+        this.defaultExceptionResolver = defaultExceptionResolver;
     }
 
     /**
-     * 设置 JSON 结果消息, 服务器抛出异常时, 以此消息响应客户端请求
+     * 设置异常返回的 JSON 信息, 服务器抛出异常时, 以此消息响应客户端请求
      *
-     * @param jsonErrorMessage json 字符串消息内容
+     * @param exceptionJsonMessage json 字符串消息内容
      */
-    public void setJsonErrorMessage(String jsonErrorMessage) {
-        this.jsonErrorMessage = jsonErrorMessage;
+    public void setExceptionJsonMessage(String exceptionJsonMessage) {
+        this.exceptionJsonMessage = exceptionJsonMessage;
     }
 
     /**
-     * 设置 JSON 结果返回的路径映射, 路径细化到控制器的方法名称。
+     * 设置异常返回 JSON 结果的位置映射集合, 路径细化到控制器的方法名称。
+     * 格式: 控制器全路径名称.方法名称
      * 通配符*可用于替换多个字类字符, eg: com.domain.controller.UserController.*
-     * 配置此项需关联配置 jsonErrorMessage 项, 以保证正确返回 JSON 结果到客户端
+     * 配置此项需关联配置 exceptionJsonMessage 项, 以保证正确返回 JSON 结果到客户端
      *
-     * @param jsonErrorMappings 映射 JSON 结果返回的路径
+     * @param exceptionJsonMappings 异常返回 JSON 结果的位置映射集合
      */
-    public void setJsonErrorMappings(String[] jsonErrorMappings) {
-        this.jsonErrorMappings = convertRegularExpression(jsonErrorMappings);
+    public void setExceptionJsonMappings(String[] exceptionJsonMappings) {
+        this.exceptionJsonMappings = convertRegularExpression(exceptionJsonMappings);
     }
 
     /**
-     * 设置视图结果返回的路径映射, 路径细化到控制器的方法名称。
+     * 设置异常返回视图的位置映射集合, 路径细化到控制器的方法名称。
+     * 格式: 控制器全路径名称.方法名称
      * 通配符*可用于替换多个字类字符, eg: com.domain.controller.UserController.*
      *
-     * @param viewErrorMappings 映射视图结果返回的路径
+     * @param exceptionViewMappings 异常返回视图的位置映射集合
      */
-    public void setViewErrorMappings(String[] viewErrorMappings) {
-        this.viewErrorMappings = convertRegularExpression(viewErrorMappings);
+    public void setExceptionViewMappings(String[] exceptionViewMappings) {
+        this.exceptionViewMappings = convertRegularExpression(exceptionViewMappings);
     }
 
     // 转换为正则表达式表示
@@ -98,7 +102,7 @@ public class ExceptionLoggingHandler extends SimpleMappingExceptionResolver {
 
     // 写出 JSON 到客户端
     private ModelAndView writeJSONMessage(HttpServletResponse response) {
-        HttpContext.writeResponseMessage(response, jsonErrorMessage);
+        HttpContext.writeResponseMessage(response, exceptionJsonMessage);
         return null;
     }
 
