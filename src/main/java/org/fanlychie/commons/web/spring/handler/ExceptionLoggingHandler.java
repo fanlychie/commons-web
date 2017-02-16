@@ -20,9 +20,9 @@ public class ExceptionLoggingHandler extends SimpleMappingExceptionResolver {
     private String defaultExceptionResolver;
 
     /**
-     * 异常返回的 JSON 信息
+     * 默认异常返回的 JSON 信息
      */
-    private String exceptionJsonMessage;
+    private String defaultExceptionJsonMessage;
 
     /**
      * 异常返回 JSON 结果的位置映射集合
@@ -63,17 +63,17 @@ public class ExceptionLoggingHandler extends SimpleMappingExceptionResolver {
     /**
      * 设置异常返回的 JSON 信息, 服务器抛出异常时, 以此消息响应客户端请求
      *
-     * @param exceptionJsonMessage json 字符串消息内容
+     * @param defaultExceptionJsonMessage json 字符串消息内容
      */
-    public void setExceptionJsonMessage(String exceptionJsonMessage) {
-        this.exceptionJsonMessage = exceptionJsonMessage;
+    public void setDefaultExceptionJsonMessage(String defaultExceptionJsonMessage) {
+        this.defaultExceptionJsonMessage = defaultExceptionJsonMessage;
     }
 
     /**
      * 设置异常返回 JSON 结果的位置映射集合, 路径细化到控制器的方法名称。
      * 格式: 控制器全路径名称.方法名称
      * 通配符*可用于替换多个字类字符, eg: com.domain.controller.UserController.*
-     * 配置此项需关联配置 exceptionJsonMessage 项, 以保证正确返回 JSON 结果到客户端
+     * 配置此项需关联配置 defaultExceptionJsonMessage 项, 以保证正确返回 JSON 结果到客户端
      *
      * @param exceptionJsonMappings 异常返回 JSON 结果的位置映射集合
      */
@@ -102,7 +102,7 @@ public class ExceptionLoggingHandler extends SimpleMappingExceptionResolver {
 
     // 写出 JSON 到客户端
     private ModelAndView writeJSONMessage(HttpServletResponse response) {
-        HttpContext.writeResponseMessage(response, exceptionJsonMessage);
+        HttpContext.writeResponseMessage(response, defaultExceptionJsonMessage);
         return null;
     }
 
