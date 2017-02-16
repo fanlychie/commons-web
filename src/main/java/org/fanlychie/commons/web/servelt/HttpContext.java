@@ -1,6 +1,7 @@
 package org.fanlychie.commons.web.servelt;
 
 import org.fanlychie.commons.web.exception.RuntimeCastException;
+import org.springframework.http.MediaType;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -160,7 +161,7 @@ public final class HttpContext {
         response.setDateHeader("Expires", 0);
         response.setHeader("Pragma", "no-cache");
         response.setHeader("Cache-Control", "no-cache");
-        response.setContentType("text/html;charset=utf-8");
+        response.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
         try {
             response.getWriter().write(message);
         } catch (IOException e) {
