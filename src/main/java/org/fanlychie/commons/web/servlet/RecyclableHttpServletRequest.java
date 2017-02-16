@@ -1,4 +1,4 @@
-package org.fanlychie.commons.web.servelt;
+package org.fanlychie.commons.web.servlet;
 
 import org.fanlychie.commons.web.exception.RuntimeCastException;
 

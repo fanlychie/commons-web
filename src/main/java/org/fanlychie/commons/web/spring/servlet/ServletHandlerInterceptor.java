@@ -1,6 +1,7 @@
 package org.fanlychie.commons.web.spring.servlet;
 
-import org.fanlychie.commons.web.servelt.HttpContext;
+import org.fanlychie.commons.web.servlet.RequestContext;
+import org.fanlychie.commons.web.servlet.ResponseContext;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -9,7 +10,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
- * Servlet 处理器拦截, 可以通过 HttpContext 获取请求相关的上下文变量
+ * Servlet 处理器拦截
+ * <p>
+ * 可以通过 RequestContext 和 ResponseContext 获取请求相关的上下文变量
+ * <p>
  * Created by fanlychie on 2017/2/15.
  */
 public abstract class ServletHandlerInterceptor extends HandlerInterceptorAdapter {
@@ -28,7 +32,8 @@ public abstract class ServletHandlerInterceptor extends HandlerInterceptorAdapte
 
     @Override
     public final boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        HttpContext.init(request, response);
+        RequestContext.setLocal(request);
+        ResponseContext.setLocal(response);
         String uri = request.getRequestURI();
         if (skipUrl(uri) || !interceptUrl(uri)) {
             return true;
@@ -62,7 +67,7 @@ public abstract class ServletHandlerInterceptor extends HandlerInterceptorAdapte
      * @throws Exception
      */
     protected boolean forward(String path) throws Exception {
-        HttpContext.getRequest().getRequestDispatcher(path).forward(HttpContext.getRequest(), HttpContext.getResponse());
+        RequestContext.forward(path);
         return false;
     }
 
@@ -74,7 +79,7 @@ public abstract class ServletHandlerInterceptor extends HandlerInterceptorAdapte
      * @throws Exception
      */
     protected boolean sendRedirect(String location) throws Exception {
-        HttpContext.getResponse().sendRedirect(location);
+        ResponseContext.sendRedirect(location);
         return false;
     }
 

@@ -1,6 +1,6 @@
 package org.fanlychie.commons.web.spring.handler;
 
-import org.fanlychie.commons.web.servelt.HttpContext;
+import org.fanlychie.commons.web.servlet.ResponseContext;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.ModelAndView;
@@ -58,7 +58,9 @@ public class ExceptionLoggingHandler extends SimpleMappingExceptionResolver {
 
     /**
      * 设置默认异常处理方式, 取值 [json/view]
+     * <p>
      * json: 表示异常时默认返回 JSON 字符串结果
+     * <p>
      * view: 表示异常时默认返回视图页面的结果
      *
      * @param defaultExceptionResolver 默认异常处理方式
@@ -78,8 +80,11 @@ public class ExceptionLoggingHandler extends SimpleMappingExceptionResolver {
 
     /**
      * 设置异常返回 JSON 结果的位置映射集合, 路径细化到控制器的方法名称。
+     * <p>
      * 格式: 控制器全路径名称.方法名称
+     * <p>
      * 通配符*可用于替换多个字类字符, eg: com.domain.controller.UserController.*
+     * <p>
      * 配置此项需关联配置 defaultExceptionJsonMessage 项, 以保证正确返回 JSON 结果到客户端
      *
      * @param exceptionJsonMappings 异常返回 JSON 结果的位置映射集合
@@ -90,7 +95,9 @@ public class ExceptionLoggingHandler extends SimpleMappingExceptionResolver {
 
     /**
      * 设置异常返回视图的位置映射集合, 路径细化到控制器的方法名称。
+     * <p>
      * 格式: 控制器全路径名称.方法名称
+     * <p>
      * 通配符*可用于替换多个字类字符, eg: com.domain.controller.UserController.*
      *
      * @param exceptionViewMappings 异常返回视图的位置映射集合
@@ -101,6 +108,7 @@ public class ExceptionLoggingHandler extends SimpleMappingExceptionResolver {
 
     /**
      * 设置异常返回的 JSON 信息映射表, 发生异常时, 若为 JSON 结果返回, 则先在此映射表查找异常映射的消息内容,
+     * <p>
      * 若查找不到才使用 defaultExceptionJsonMessage 配置项返回消息
      *
      * @param exceptionJsonMessageMappings 异常返回的 JSON 信息映射表
@@ -126,7 +134,8 @@ public class ExceptionLoggingHandler extends SimpleMappingExceptionResolver {
                 jsonString = mappingValue;
             }
         }
-        HttpContext.writeResponseMessage(response, jsonString);
+        ResponseContext.setLocal(response);
+        ResponseContext.write(jsonString);
         return new ModelAndView();
     }
 

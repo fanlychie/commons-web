@@ -4,7 +4,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * 简单的处理器拦截, 可以通过 HttpContext 获取请求相关的上下文变量
+ * 简单的处理器拦截
+ * <p>
+ * 可以通过 RequestContext 和 ResponseContext 获取请求相关的上下文变量
+ * <p>
  * Created by fanlychie on 2017/2/15.
  */
 public class SimpleHandlerInterceptor extends ServletHandlerInterceptor {
