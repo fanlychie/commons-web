@@ -1,12 +1,14 @@
 package org.fanlychie.commons.web.spring.handler;
 
 import org.fanlychie.commons.web.servelt.HttpContext;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 /**
  * 异常记录日志处理器
@@ -34,6 +36,11 @@ public class ExceptionLoggingHandler extends SimpleMappingExceptionResolver {
      */
     private String[] exceptionViewMappings;
 
+    /**
+     * 异常返回的 JSON 信息映射表
+     */
+    private Map<Class<?>, String> exceptionJsonMessageMappings;
+
     @Override
     protected ModelAndView doResolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
         logger.error("「捕捉到异常」", ex);
@@ -41,10 +48,10 @@ public class ExceptionLoggingHandler extends SimpleMappingExceptionResolver {
         String location = method.getBeanType().getName() + "." + method.getMethod().getName();
         if (defaultExceptionResolver == null || defaultExceptionResolver.equals("view")) {
             if (matchLocation(location, exceptionJsonMappings)) {
-                return writeJSONMessage(response);
+                return writeJSONMessage(response, ex);
             }
         } else if (defaultExceptionResolver.equals("json") && !matchLocation(location, exceptionViewMappings)) {
-            return writeJSONMessage(response);
+            return writeJSONMessage(response, ex);
         }
         return super.doResolveException(request, response, handler, ex);
     }
@@ -92,6 +99,16 @@ public class ExceptionLoggingHandler extends SimpleMappingExceptionResolver {
         this.exceptionViewMappings = convertRegularExpression(exceptionViewMappings);
     }
 
+    /**
+     * 设置异常返回的 JSON 信息映射表, 发生异常时, 若为 JSON 结果返回, 则先在此映射表查找异常映射的消息内容,
+     * 若查找不到才使用 defaultExceptionJsonMessage 配置项返回消息
+     *
+     * @param exceptionJsonMessageMappings 异常返回的 JSON 信息映射表
+     */
+    public void setExceptionJsonMessageMappings(Map<Class<?>, String> exceptionJsonMessageMappings) {
+        this.exceptionJsonMessageMappings = exceptionJsonMessageMappings;
+    }
+
     // 转换为正则表达式表示
     private String[] convertRegularExpression(String[] mappings) {
         for (int i = 0; i < mappings.length; i++) {
@@ -101,9 +118,16 @@ public class ExceptionLoggingHandler extends SimpleMappingExceptionResolver {
     }
 
     // 写出 JSON 到客户端
-    private ModelAndView writeJSONMessage(HttpServletResponse response) {
-        HttpContext.writeResponseMessage(response, defaultExceptionJsonMessage);
-        return null;
+    private ModelAndView writeJSONMessage(HttpServletResponse response, Exception e) {
+        String jsonString = defaultExceptionJsonMessage;
+        if (!CollectionUtils.isEmpty(exceptionJsonMessageMappings)) {
+            String mappingValue = exceptionJsonMessageMappings.get(e.getClass());
+            if (mappingValue != null) {
+                jsonString = mappingValue;
+            }
+        }
+        HttpContext.writeResponseMessage(response, jsonString);
+        return new ModelAndView();
     }
 
     // 匹配位置
