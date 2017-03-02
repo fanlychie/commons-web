@@ -15,28 +15,24 @@ public final class ClientInformation {
      * @return 返回客户端 IP 地址
      */
     public static String getIPAddress(HttpServletRequest request) {
-        String ip = request.getHeader("X-Real-IP");
-        if (isFound(ip)) {
+        String ip = null;
+        if ((ip = getRequestHeader(request, "X-Real-IP")) != null) {
             return ip;
         }
-        ip = request.getHeader("X-Forwarded-For");
-        if (isFound(ip)) {
+        if ((ip = getRequestHeader(request, "X-Forwarded-For")) != null) {
             int index = ip.indexOf(",");
-            if (index != -1) {
-                return ip.substring(0, index);
-            } else {
-                return ip;
-            }
+            return index == -1 ? ip : ip.substring(0, index);
         }
-        ip = request.getHeader("Proxy-Client-IP");
-        if (isFound(ip)) {
+        if ((ip = getRequestHeader(request, "Proxy-Client-IP")) != null) {
             return ip;
         }
-        ip = request.getHeader("WL-Proxy-Client-IP");
-        if (isFound(ip)) {
+        if ((ip = getRequestHeader(request, "WL-Proxy-Client-IP")) != null) {
             return ip;
         }
-        return request.getRemoteAddr();
+        if ((ip = request.getRemoteAddr()) != null && !ip.equals("0:0:0:0:0:0:0:1")) {
+            return ip;
+        }
+        return "127.0.0.1";
     }
 
     // 私有化构造器
@@ -44,9 +40,16 @@ public final class ClientInformation {
 
     }
 
-    // 查找 IP
-    private static boolean isFound(String ip) {
-        return ip != null && ip.length() > 0 && !"unknown".equalsIgnoreCase(ip);
+    /**
+     * 获取请求头参数的值
+     *
+     * @param request HttpServletRequest
+     * @param name    参数名称
+     * @return 若值为 null 或忽略大小写与 unknown 字符相同, 则返回 null
+     */
+    private static String getRequestHeader(HttpServletRequest request, String name) {
+        String value = request.getHeader(name);
+        return value == null || value.equalsIgnoreCase("unknown") ? null : value;
     }
 
 }
