@@ -3,108 +3,89 @@ package org.fanlychie.commons.web.spring.validator.handler;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
-import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.CodeSignature;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.fanlychie.commons.web.spring.validator.Valid;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /**
- * Created by 范忠云 on 2017/3/17.
+ * 注解处理AOP
+ * Created by fanlychie on 2017/3/17.
  */
 @Aspect
 public class AnnotationHandlerAspect {
 
-    public AnnotationHandlerAspect() {
-        System.out.println("---------- AnnotationHandlerAspect --------------------");
+    @Before("execution(public * *(.., @org.fanlychie.commons.web.spring.validator.Valid (*), ..))")
+    public void doResolveAnnotation(JoinPoint joinPoint) {
+        boolean applicationJsonResponse = isApplicationJsonResponse(joinPoint);
+        List<MethodArgument> arguments = MethodArgument.of(joinPoint);
+        for (MethodArgument argument : arguments) {
+            List<Annotation> annotations = argument.annotations;
+            for (Annotation annotation : annotations) {
+                if (annotation.annotationType().equals(Valid.class)) {
+                    AnnotationHandlerExecutor.doExecute(argument.value, applicationJsonResponse);
+                }
+            }
+        }
     }
 
-    //    @Before("execution(public * *(..)) && args(org.fanlychie.commons.web.spring.validator.Valid)")
-
-    /*
-    @Before(value="execution(public * *(..)) && target(bean) && @annotation(valid)", argNames="bean,valid")
-    public void before(Object bean, Valid valid) {
-        System.out.println();
-    }
-    */
-
-    /*
-    @Pointcut("@annotation(verify)")
-    public void annotationPointCutDefinition(Valid verify) {
-        System.out.println();
-    }
-
-    @Before("execution(public * *(..)) && annotationPointCutDefinition(verify)")
-    public void before(Valid verify) {
-        System.out.println();
-    }
-    */
-
-    @Pointcut("args(valid)")
-    public void annotationPointCutDefinition(Valid valid) {
-        System.out.println();
-    }
-
-    @Before("execution(* *(.., @org.fanlychie.commons.web.spring.validator.Valid (*), ..))")
-    public void before(JoinPoint joinPoint) {
-        MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
-        for (MethodArgument argument : MethodArgument.of(joinPoint))
-            if (argument.hasAnnotation(Valid.class) && argument.getValue() == null)
-                throw new NullPointerException(String.format(
-                        "%s: argument \"%s\" (at position %d) cannot be null",
-                        methodSignature.getMethod(), argument.getName(), argument.getIndex()));
+    private boolean isApplicationJsonResponse(JoinPoint joinPoint) {
+        Annotation restControllerAnnotation = joinPoint.getTarget().getClass().getAnnotation(RestController.class);
+        if (restControllerAnnotation != null) {
+            return true;
+        }
+        MethodSignature methodSignature = (MethodSignature) joinPoint.getStaticPart().getSignature();
+        Annotation responseBodyAnnotation = methodSignature.getMethod().getAnnotation(ResponseBody.class);
+        if (responseBodyAnnotation != null) {
+            return true;
+        }
+        return false;
     }
 
     private static class MethodArgument {
 
-        private final int index;
-        private final String name;
-        private final List<Annotation> annotations;
-        private final Object value;
+        /**
+         * 方法的参数索引
+         */
+        private int index;
 
-        private MethodArgument(
-                int index,
-                String name,
-                List<Annotation> annotations,
-                Object value) {
-            this.index = index;
-            this.name = name;
-            this.annotations = Collections.unmodifiableList(annotations);
-            this.value = value;
-        }
+        /**
+         * 方法的参数名称
+         */
+        private String name;
 
-        public int getIndex() { return index; }
+        /**
+         * 方法的参数的值
+         */
+        private Object value;
 
-        public String getName() { return name; }
+        /**
+         * 方法的参数注解列表
+         */
+        private List<Annotation> annotations;
 
-        public List<Annotation> getAnnotations() { return annotations; }
-
-        public boolean hasAnnotation(Class<? extends Annotation> type) {
-            for (Annotation annotation : annotations)
-                if (annotation.annotationType().equals(type))
-                    return true;
-            return false;
-        }
-
-        public Object getValue() { return value; }
-
-        public static List<MethodArgument> of(JoinPoint joinPoint) {
+        // 解析方法的参数列表信息
+        private static List<MethodArgument> of(JoinPoint joinPoint) {
             List<MethodArgument> arguments = new ArrayList<>();
-            CodeSignature codeSignature = (CodeSignature) joinPoint.getSignature();
-            String[] names = codeSignature.getParameterNames();
-            MethodSignature methodSignature =
-                    (MethodSignature) joinPoint.getStaticPart().getSignature();
+            String[] names = ((CodeSignature) joinPoint.getSignature()).getParameterNames();
+            MethodSignature methodSignature = (MethodSignature) joinPoint.getStaticPart().getSignature();
             Annotation[][] annotations = methodSignature.getMethod().getParameterAnnotations();
             Object[] values = joinPoint.getArgs();
-            for (int i = 0; i < values.length; i++)
-                arguments.add(new MethodArgument(
-                        i, names[i], Arrays.asList(annotations[i]), values[i]));
-            return Collections.unmodifiableList(arguments);
+            for (int i = 0; i < values.length; i++) {
+                MethodArgument argument = new MethodArgument();
+                argument.index = i;
+                argument.name = names[i];
+                argument.value = values[i];
+                argument.annotations = Arrays.asList(annotations[i]);
+                arguments.add(argument);
+            }
+            return arguments;
         }
 
     }

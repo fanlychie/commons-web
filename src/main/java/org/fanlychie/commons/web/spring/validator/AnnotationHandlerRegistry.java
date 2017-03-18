@@ -30,6 +30,8 @@ public class AnnotationHandlerRegistry extends WebMvcConfigurerAdapter {
     @Override
     public void configureHandlerExceptionResolvers(List<HandlerExceptionResolver> exceptionResolvers) {
         exceptionResolvers.add(new AnnotationMappingExceptionResolver());
+        // 重排序, 确保 AnnotationMappingExceptionResolver 排在第一位
+        // {@see org.springframework.web.servlet.DispatcherServlet#processHandlerException}
         Collections.sort(exceptionResolvers, new Comparator<HandlerExceptionResolver>() {
             @Override
             public int compare(HandlerExceptionResolver o1, HandlerExceptionResolver o2) {

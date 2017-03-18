@@ -8,13 +8,14 @@ import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-/**
- * Not Null
- */
 @Documented
 @Target({FIELD, METHOD})
 @Retention(RUNTIME)
-public @interface NotNull {
+public @interface Length {
+
+    int min() default 0;
+
+    int max() default Integer.MAX_VALUE;
 
     String errmsg();
 

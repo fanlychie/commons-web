@@ -9,15 +9,15 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Not Null
+ * 安全的HTML, 仅当标注在 {@link java.lang.CharSequence} 类型的属性或方法时进行值的验证和矫正
  */
 @Documented
 @Target({FIELD, METHOD})
 @Retention(RUNTIME)
-public @interface NotNull {
+public @interface SafeHtml {
 
-    String errmsg();
+    Strategy value() default Strategy.CLEAR;
 
-    Class<?> errtype() default String.class;
+    public static enum Strategy { ESCAPE, CLEAR; }
 
 }

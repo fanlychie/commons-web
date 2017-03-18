@@ -9,12 +9,12 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Not Null
+ * 英文字母, 大小写混合, 仅当标注在 {@link java.lang.CharSequence} 类型的属性或方法时进行值的验证
  */
 @Documented
 @Target({FIELD, METHOD})
 @Retention(RUNTIME)
-public @interface NotNull {
+public @interface Alphabetic {
 
     String errmsg();
 

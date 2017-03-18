@@ -4,20 +4,17 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Not Null
+ * 类注解, 参数值验证失败时的返回值类型
  */
 @Documented
-@Target({FIELD, METHOD})
+@Target(TYPE)
 @Retention(RUNTIME)
-public @interface NotNull {
+public @interface ErrorType {
 
-    String errmsg();
-
-    Class<?> errtype() default String.class;
+    Class<?> value();
 
 }
