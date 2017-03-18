@@ -24,7 +24,7 @@ public class AnnotationMappingExceptionResolver extends SimpleMappingExceptionRe
                 return new ModelAndView(ave.getMessage());
             }
         }
-        return super.doResolveException(request, response, handler, ex);
+        return null;
     }
 
     // 写出 JSON 到客户端
