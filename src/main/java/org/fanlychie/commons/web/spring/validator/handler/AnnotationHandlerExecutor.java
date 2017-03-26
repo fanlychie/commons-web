@@ -2,7 +2,6 @@ package org.fanlychie.commons.web.spring.validator.handler;
 
 import com.alibaba.fastjson.JSON;
 import org.fanlychie.commons.web.exception.ArgumentVaildException;
-import org.fanlychie.commons.web.exception.RuntimeCastException;
 import org.fanlychie.commons.web.spring.validator.constraint.Alphabetic;
 import org.fanlychie.commons.web.spring.validator.constraint.Alphanumeric;
 import org.fanlychie.commons.web.spring.validator.constraint.Length;
@@ -22,8 +21,7 @@ import org.fanlychie.commons.web.spring.validator.validation.NumericValidator;
 import org.fanlychie.commons.web.spring.validator.validation.PatternValidator;
 import org.fanlychie.commons.web.spring.validator.validation.SafeHtmlValidator;
 import org.fanlychie.jreflect.BeanDescriptor;
-
-import java.lang.reflect.Constructor;
+import org.fanlychie.jreflect.ConstructorDescriptor;
 
 /**
  * 注解处理执行器
@@ -171,19 +169,10 @@ public final class AnnotationHandlerExecutor {
             } else {
                 errorType = argErrorType;
             }
-            Object result = newInstance(errorType, message);
+            Object result = new ConstructorDescriptor(errorType).newInstance(message);
             return new ArgumentVaildException(JSON.toJSONString(result), true);
         } else {
             return new ArgumentVaildException(message, false);
-        }
-    }
-
-    private static Object newInstance(Class<?> type, String message) {
-        try {
-            Constructor constructor = type.getDeclaredConstructor(String.class);
-            return constructor.newInstance(message);
-        } catch (Exception e) {
-            throw new RuntimeCastException(e);
         }
     }
 

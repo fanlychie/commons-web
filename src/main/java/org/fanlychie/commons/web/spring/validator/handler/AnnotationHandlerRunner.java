@@ -30,7 +30,7 @@ public abstract class AnnotationHandlerRunner<A extends Annotation> {
             beanErrorType = errorType.value();
         }
         BeanDescriptor beanDescriptor = new BeanDescriptor(bean);
-        Map<Field, A> map = beanDescriptor.getFieldDescriptor().getAnnotationsMap(annotationClass);
+        Map<Field, A> map = beanDescriptor.getFieldDescriptor().getFieldAnnotationMap(annotationClass);
         for (Field field : map.keySet()) {
             run(beanDescriptor, field.getName(), beanDescriptor.getValueByName(field.getName()), field.getType(), map.get(field), beanErrorType);
         }
