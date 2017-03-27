@@ -25,18 +25,27 @@ import java.util.Enumeration;
  */
 public class RequestLoggingFilter implements Filter {
 
+    /**
+     * 在配置文件通过 ignore 参数配置, 以达到忽略记录此请求的日志效果.
+     * 当需要配置多个时, 使用英文逗号','或空格分隔开
+     */
+    private String[] ignores;
+
     private Log logger = LogFactory.getLog(RequestLoggingFilter.class);
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-
+        String ignore = filterConfig.getInitParameter("ignore");
+        if (ignore != null && !ignore.isEmpty()) {
+            ignores = ignore.split("[, ]");
+        }
     }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         RequestContext.setLocal(request);
         ResponseContext.setLocal(response);
-        if (logger.isInfoEnabled()) {
+        if (!isIgnore() && logger.isInfoEnabled()) {
             switch (((HttpServletRequest) request).getMethod().toUpperCase()) {
                 case "GET":
                 case "DELETE":
@@ -97,6 +106,23 @@ public class RequestLoggingFilter implements Filter {
     private boolean isFileUploadRequest() {
         String contentType = RequestContext.getRequest().getHeader("Content-Type");
         return contentType == null ? false : contentType.matches("multipart/form-data[\\S\\W]*");
+    }
+
+    /**
+     * 是否忽略此次请求的日志记录
+     *
+     * @return 忽略返回 true, 否则返回 false
+     */
+    private boolean isIgnore() {
+        if (ignores != null) {
+            String uri = RequestContext.getRequest().getRequestURI();
+            for (String ignore : ignores) {
+                if (uri.matches(ignore.replace("*", "\\S*"))) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -162,23 +188,16 @@ public class RequestLoggingFilter implements Filter {
     private String getRequestMessage(String queryString) {
         StringBuilder message = new StringBuilder();
         HttpServletRequest request = RequestContext.getRequest();
-        message.append(request.getMethod().toUpperCase()).append(" ")
-                .append(request.getRequestURI());
+        message.append(request.getMethod().toUpperCase()).append(" ").append(request.getRequestURI());
         if (queryString != null) {
             message.append(queryString);
         }
-        message.append(" ")
-                .append(request.getProtocol()).append(" ")
-                .append(RequestContext.getClientIPAddress());
+        message.append(" ").append(request.getProtocol()).append(" ").append(RequestContext.getClientIPAddress());
         String contentType = request.getHeader("Content-Type");
         String contentLength = request.getHeader("Content-Length");
         String contentEncoding = request.getHeader("Content-Encoding");
         if (contentType != null || contentEncoding != null || contentLength != null) {
-            message.append(" [")
-                    .append("Content-Type=").append(contentType)
-                    .append(", Content-Encoding=").append(contentEncoding)
-                    .append(", Content-Length=").append(contentLength)
-                    .append("]");
+            message.append(" [").append("Content-Type=").append(contentType).append(", Content-Encoding=").append(contentEncoding).append(", Content-Length=").append(contentLength).append("]");
         }
         return message.toString();
     }
