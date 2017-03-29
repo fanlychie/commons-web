@@ -208,9 +208,9 @@ GET http://localhost/demo/formalMethod2
 
 需要提醒的是，配置 ExceptionLoggingHandler 之后，异常不再需要捕捉，相反的，而应该往外抛出。ExceptionLoggingHandler 在捕捉到异常之后会使用 ERROR 级别记录到日志，同时根据配置最大可能的保证在服务器抛出异常之后客户端能得到正常的响应。如果在业务中捕捉了异常，除非手工抛出，否则 ExceptionLoggingHandler 无法感知异常，配置也就无法起到作用。
 
-# UTF8JsonHttpMessageConverter & UTF8StringHttpMessageConverter
+# UTF8StringHttpMessageConverter & UTF8JsonHttpMessageConverter
 
-内部做了简单的封装，用于简化XML配置。以前你可能是这样配置的：
+内部做了简单的封装（用于简化XML配置），分别用于解决服务器端返回数据字符串中文乱码和JSON数据中文乱码。以前你可能是这样配置的：
 
 ```xml
 <bean id="stringHttpMessageConverter" class="org.springframework.http.converter.StringHttpMessageConverter">
