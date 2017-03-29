@@ -8,8 +8,7 @@
 ```xml
 <filter>
     <filter-name>requestLoggerFilter</filter-name>
-    <filter-class>org.fanlychie.commons.web.filter.RequestLoggingFilter
-    </filter-class>
+    <filter-class>org.fanlychie.commons.web.filter.RequestLoggingFilter</filter-class>
 </filter>
 <filter-mapping>
     <filter-name>requestLoggerFilter</filter-name>
@@ -36,8 +35,7 @@ INFO  [RequestLoggingFilter:63] - param: {name=fanlychie, sex=male}
 ```xml
 <filter>
     <filter-name>requestLoggerFilter</filter-name>
-    <filter-class>org.fanlychie.commons.web.filter.RequestLoggingFilter
-    </filter-class>
+    <filter-class>org.fanlychie.commons.web.filter.RequestLoggingFilter</filter-class>
     <init-param>
         <param-name>ignore</param-name>
         <param-value>*/test/*</param-value>
@@ -96,7 +94,7 @@ INFO  [RequestLoggingFilter:63] - param: {name=fanlychie, sex=male}
 </bean>
 ```
 
-此配置适用于以提供JSON数据接口服务为主导并提供少量页面服务的应用。若应用没有提供页面服务，exceptionViewMappings 和 exceptionMappings 可以不用配置。exceptionJsonMessageMappings 也不是必须配置项，它是根据具体业务制定的。
+defaultExceptionResolver = json 适用于以提供JSON数据接口服务为主导的应用。若应用同时和提供少量的页面服务，可配置 exceptionViewMappings 和 exceptionMappings，否则可以不用配置。exceptionJsonMessageMappings 也不是必须配置项，它是根据具体业务制定的。
 
 Controller 示例：
 
