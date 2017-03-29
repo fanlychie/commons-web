@@ -206,4 +206,4 @@ GET http://localhost/demo/formalMethod2
 
 以上出现的配置项都是非必须的，根据实际具体的业务删减配置即可。
 
-需要提醒的是，配置 ExceptionLoggingHandler 之后，异常不再需要捕捉，相反的，而应该往外抛出。ExceptionLoggingHandler 在捕捉到异常之后会使用 ERROR 级别记录到日志，同时根据配置最大可能的在服务器抛出异常之后能得到正常的响应。如果在业务中捕捉了异常，除非手工抛出，否则 ExceptionLoggingHandler 配置无效。
+需要提醒的是，配置 ExceptionLoggingHandler 之后，异常不再需要捕捉，相反的，而应该往外抛出。ExceptionLoggingHandler 在捕捉到异常之后会使用 ERROR 级别记录到日志，同时根据配置最大可能的保证在服务器抛出异常之后客户端能得到正常的响应。如果在业务中捕捉了异常，除非手工抛出，否则 ExceptionLoggingHandler 无法感知异常，配置也就无法起到作用。
