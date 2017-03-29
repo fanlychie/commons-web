@@ -205,3 +205,5 @@ GET http://localhost/demo/formalMethod2
 ```
 
 以上出现的配置项都是非必须的，根据实际具体的业务删减配置即可。
+
+需要提醒的是，配置 ExceptionLoggingHandler 之后，异常不再需要捕捉，相反的，而应该往外抛出。如果在业务中捕捉了异常，除非手工抛出，否则 ExceptionLoggingHandler 配置无效。
