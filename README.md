@@ -248,13 +248,10 @@ GET http://localhost/demo/formalMethod2
 
 ```xml
 <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
-    <property name="webBindingInitializer" ref="webBindingInitializer" />
     <property name="messageConverters">
         <list>
-            <bean
-                class="org.fanlychie.commons.web.spring.converter.UTF8StringHttpMessageConverter" />
-            <bean
-                class="org.fanlychie.commons.web.spring.converter.UTF8JsonHttpMessageConverter" />
+            <bean class="org.fanlychie.commons.web.spring.converter.UTF8StringHttpMessageConverter" />
+            <bean class="org.fanlychie.commons.web.spring.converter.UTF8JsonHttpMessageConverter" />
         </list>
     </property>
 </bean>
