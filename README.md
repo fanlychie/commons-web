@@ -207,3 +207,55 @@ GET http://localhost/demo/formalMethod2
 以上出现的配置项都是非必须的，根据实际具体的业务删减配置即可。
 
 需要提醒的是，配置 ExceptionLoggingHandler 之后，异常不再需要捕捉，相反的，而应该往外抛出。ExceptionLoggingHandler 在捕捉到异常之后会使用 ERROR 级别记录到日志，同时根据配置最大可能的保证在服务器抛出异常之后客户端能得到正常的响应。如果在业务中捕捉了异常，除非手工抛出，否则 ExceptionLoggingHandler 无法感知异常，配置也就无法起到作用。
+
+# UTF8JsonHttpMessageConverter & UTF8StringHttpMessageConverter
+
+内部做了简单的封装，用于简化XML配置。以前你可能是这样配置的：
+
+```xml
+<bean id="stringHttpMessageConverter" class="org.springframework.http.converter.StringHttpMessageConverter">
+    <constructor-arg value="UTF-8" />
+    <property name="supportedMediaTypes">
+        <list>
+            <value>text/html;charset=utf-8</value>
+            <value>application/xml;charset=utf-8</value>
+            <value>application/json;charset=utf-8</value>
+        </list>
+    </property>
+</bean>
+
+<bean id="mappingJackson2HttpMessageConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+    <property name="supportedMediaTypes">
+        <list>
+            <value>text/html;charset=utf-8</value>
+            <value>application/xml;charset=utf-8</value>
+            <value>application/json;charset=utf-8</value>
+        </list>
+    </property>
+</bean>
+
+<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+    <property name="messageConverters">
+        <list>
+            <ref bean="stringHttpMessageConverter" />
+            <ref bean="mappingJackson2HttpMessageConverter" />
+        </list>
+    </property>
+</bean>
+```
+
+现在可以这样配置：
+
+```xml
+<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+    <property name="webBindingInitializer" ref="webBindingInitializer" />
+    <property name="messageConverters">
+        <list>
+            <bean
+                class="org.fanlychie.commons.web.spring.converter.UTF8StringHttpMessageConverter" />
+            <bean
+                class="org.fanlychie.commons.web.spring.converter.UTF8JsonHttpMessageConverter" />
+        </list>
+    </property>
+</bean>
+```
