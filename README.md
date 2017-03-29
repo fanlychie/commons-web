@@ -116,12 +116,54 @@ public void testMethod2(String name) {
 }
 
 @ResponseBody
-@RequestMapping(value = "/formalMethod", method = RequestMethod.GET)
-public Object formalMethod(String name) {
+@RequestMapping(value = "/formalMethod1", method = RequestMethod.GET)
+public Object formalMethod1(String name) {
     if (name == null) {
         throw new IllegalArgumentException();
     }
     // do something
-    return name.trim();
+    return null;
+}
+
+@ResponseBody
+@RequestMapping(value = "/formalMethod2", method = RequestMethod.GET)
+public Object formalMethod2(String name) {
+    if (name != null) {
+        name = null;
+    }
+    name.trim(); // NullPointerException
+    return null;
 }
 ```
+
+访问示例：
+
+GET http://localhost/demo/testMethod1
+
+效果示例：
+
+浏览器看到 404.jsp 页面的内容
+
+访问示例：
+
+GET http://localhost/demo/testMethod2
+
+效果示例：
+
+浏览器看到 500.jsp 页面的内容
+
+访问示例：
+
+GET http://localhost/demo/formalMethod1
+
+效果示例：
+
+{"success":false,"data":null,"errmsg":"非法参数请求"}
+
+访问示例：
+
+GET http://localhost/demo/formalMethod2
+
+效果示例：
+
+{"success":false,"data":null,"errmsg":"服务器内部异常"}
