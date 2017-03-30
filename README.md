@@ -256,3 +256,42 @@ GET http://localhost/demo/formalMethod2
     </property>
 </bean>
 ```
+
+# StringToDateConverter
+
+用于将请求参数中的字符串类型转换成java.util.Date类型。内部使用正则提取子表达式的方式能满足日常常用的日期时间字符串转换。
+
+字符串示例（数字之间的分隔符可以任意替换）：
+
+2017-03-30 21:54:08
+
+2017年3月30日
+
+21:54:08
+
+对于日期的字符串，除了年份要求是4位数值，月份和天数不做要求，可以是一位或两位的数值。
+
+对于时间的字符串，只要求含有时分秒，其余不做要求，无论是12小时制还是24小时制，无论时分秒的数值是一位还是两位。
+
+对于日期时间字符串，内部是采用日期和时间的组合，因此以上规则同样适用于日期时间字符串类型。
+
+另外，数字与数字之间的分隔符可以任意替换，如：2017-03-30 与 2017/03/30。日期和时间的最后
+
+```xml
+<bean id="conversionService" class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+    <property name="converters">
+        <set>
+            <bean class="org.fanlychie.commons.web.spring.converter.StringToDateConverter" />
+        </set>
+    </property>
+</bean>
+
+<bean id="webBindingInitializer" class="org.springframework.web.bind.support.ConfigurableWebBindingInitializer">
+    <property name="conversionService" ref="conversionService" />
+</bean>
+
+<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+    <property name="webBindingInitializer" ref="webBindingInitializer" />
+</bean>
+```
+
