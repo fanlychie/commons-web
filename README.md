@@ -367,43 +367,43 @@ spring mvc 配置文件中添加：
 
 通过配置 RequestLoggingFilter、RequestContextListener、ServletHandlerInterceptor、SimpleHandlerInterceptor 其中的任意一个时生效。
 
-## getRequest()
+### getRequest()
 
 获取本次请求的 HttpServletRequest 对象
 
-## getSession()
+### getSession()
 
 获取 HttpSession 对象
 
-## getRequestParam(String name)
+### getRequestParam(String name)
 
 获取请求参数值
 
-## setSessionAttribute(String name, Object value)
+### setSessionAttribute(String name, Object value)
 
 设置会话属性值
 
-## getSessionAttribute(String name)
+### getSessionAttribute(String name)
 
 获取会话属性的值
 
-## getInputStream()
+### getInputStream()
 
 获取输入流对象
 
-## getReader()
+### getReader()
 
 获取读对象
 
-## forward(String path)
+### forward(String path)
 
 转发
 
-## getClientIPAddress()
+### getClientIPAddress()
 
 获取客户端 IP 地址
 
-## getServerPath()
+### getServerPath()
 
 获取服务器路径地址
 
@@ -411,23 +411,23 @@ spring mvc 配置文件中添加：
 
 通过配置 RequestLoggingFilter、ServletHandlerInterceptor、SimpleHandlerInterceptor 其中的任意一个时生效。
 
-## getResponse()
+### getResponse()
 
 获取本次请求的 HttpServletResponse 对象
 
-## getOutputStream()
+### getOutputStream()
 
 获取输出流
 
-## getWriter()
+### getWriter()
 
 获取写对象
 
-## write(String text)
+### write(String text)
 
 向客户端写出响应消息
 
-## sendRedirect(String location)
+### sendRedirect(String location)
 
 重定向
 
