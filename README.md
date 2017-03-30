@@ -432,3 +432,76 @@ spring mvc 配置文件中添加：
 重定向
 
 # InputDTOConverter
+
+输入 DTO 对象转换器, 意在将当前对象作为输入对象, 并将其转换输出为业务对象, 即 DTO -> BO 的转换借助 org.springframework.beans.BeanUtils#copyProperties 工具类, 采用 Java 内省的方式内部使用安全的强缓存实现。
+
+```java
+public class User {
+
+    private Long id;
+
+    private String username;
+
+    private String password;
+
+    private Double accountBalance;
+
+    // getter and setter
+    
+}
+```
+
+```java
+public class UserInputDTO extends InputDTOConverter<User> {
+
+    private String username;
+
+    private String password;
+
+    // getter and setter
+
+}
+```
+
+```java
+@RequestMapping(value = "/user/login", method = RequestMethod.POST)
+public String login(UserInputDTO userInputDTO) {
+    User user = userInputDTO.convert();
+    // do something
+    return "home";
+}
+```
+
+UserInputDTO 只接收用户名和密码参数，并且可轻松的转换成目标对象，可有效的防止恶意修改账户余额等重要字段（注：此此仅做示例用）。
+
+# OutputDTOConverter
+
+输出 DTO 对象转换器, 意在将输入的参数对象转换输出为数据传输对象, 即 BO -> DTO 的转换借助 org.springframework.beans.BeanUtils#copyProperties 工具类, 采用 Java 内省的方式内部使用安全的强缓存实现。
+
+```java
+public class UserOutputDTO extends OutputDTOConverter<User> {
+
+    private Long id;
+
+    private String username;
+
+    private Double accountBalance;
+
+    public UserOutputDTO(User input) {
+        super(input);
+    }
+
+    // getter and setter
+
+}
+```
+
+```java
+@ResponseBody
+@RequestMapping(value = "/user/info/{userId}", method = RequestMethod.GET)
+public UserOutputDTO info(Long userId) {
+    User user = userService.selectUserById(userId);
+    // do something
+    return new UserOutputDTO(user);
+}
+```
