@@ -1,14 +1,16 @@
 package org.fanlychie.commons.web.spring.converter;
 
 import org.fanlychie.commons.web.exception.ParseStringToDateException;
+import org.fanlychie.commons.web.exception.RuntimeCastException;
 import org.springframework.core.convert.converter.Converter;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 字符串到日期对象转换器
@@ -16,50 +18,48 @@ import java.util.List;
  */
 public class StringToDateConverter implements Converter<String, Date> {
 
-    /**
-     * 时间日期格式化模式列表
-     */
-    private List<DateFormat> formats;
+    private static final Pattern DATE_STRING_REGEX = Pattern.compile("(\\d{4})(\\S)(\\d{1,2})(\\S)(\\d{1,2})([^ \\f\\n\\r\\t\\v\\d]?)");
 
-    /**
-     * 构造器, 预设时间日期格式化模式
-     */
-    public StringToDateConverter() {
-        formats = new LinkedList<>();
-        formats.add(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
-        formats.add(new SimpleDateFormat("yyyy/MM/dd HH:mm:ss"));
-        formats.add(new SimpleDateFormat("yyyy/MM/dd"));
-        formats.add(new SimpleDateFormat("yyyy-MM-dd"));
-        formats.add(new SimpleDateFormat("HH:mm:ss"));
-    }
+    private static final Pattern TIME_STRING_REGEX = Pattern.compile("(\\d{1,2})(\\S)(\\d{1,2})(\\S)(\\d{1,2})([^ \\f\\n\\r\\t\\v\\d]?)");
+
+    private static final Pattern DATETIME_STRING_REGEX = Pattern.compile(DATE_STRING_REGEX + "(\\s)" + TIME_STRING_REGEX);
+
+    private static final Pattern TIMESTAMP_STRING_REGEX = Pattern.compile("[1-9]\\d{12,}");
+
+    private static final ConcurrentHashMap<String, DateFormat> PATTERN_FORMAT = new ConcurrentHashMap<>();
 
     @Override
     public Date convert(String source) {
-        for (DateFormat format : formats) {
-            try {
-                return format.parse(source);
-            } catch (ParseException e) {} // 忽略异常
+        Matcher matcher = DATETIME_STRING_REGEX.matcher(source);
+        if (matcher.matches()) {
+            String pattern = matcher.replaceAll("yyyy$2MM$4dd$6$7HH$9mm$11ss$13");
+            return parseStringToDate(source, pattern);
+        }
+        matcher = DATE_STRING_REGEX.matcher(source);
+        if (matcher.matches()) {
+            String pattern = matcher.replaceAll("yyyy$2MM$4dd$6");
+            return parseStringToDate(source, pattern);
+        }
+        matcher = TIMESTAMP_STRING_REGEX.matcher(source);
+        if (matcher.matches()) {
+            return new Date(Long.parseLong(source));
+        }
+        matcher = TIME_STRING_REGEX.matcher(source);
+        if (matcher.matches()) {
+            String pattern = matcher.replaceAll("HH$2mm$4ss$6");
+            return parseStringToDate(source, pattern);
         }
         throw new ParseStringToDateException("can not parse \"" + source + "\" to Date");
     }
 
-    /**
-     * 设置时间日期格式化模式
-     *
-     * @param pattern 时间日期格式化字符串
-     */
-    public void setPattern(String pattern) {
-        formats.add(new SimpleDateFormat(pattern));
-    }
-
-    /**
-     * 设置时间日期格式化模式列表
-     *
-     * @param patterns 时间日期格式化字符串列表
-     */
-    public void setPatterns(List<String> patterns) {
-        for (String pattern : patterns) {
-            formats.add(new SimpleDateFormat(pattern));
+    private Date parseStringToDate(String source, String pattern) {
+        if (!PATTERN_FORMAT.containsKey(pattern)) {
+            PATTERN_FORMAT.put(pattern, new SimpleDateFormat(pattern));
+        }
+        try {
+            return PATTERN_FORMAT.get(pattern).parse(source);
+        } catch (ParseException e) {
+            throw new RuntimeCastException(e);
         }
     }
 
