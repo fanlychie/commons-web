@@ -510,7 +510,42 @@ UserOutputDTO 只输出用户名和账户余额信息，可以向外部隐藏一
 
 与 Hibernate Validator 注解类似，但又不同于 Hibernate Validator。内部是采用抛异常的机制，在参数校验失败时正常响应客户端的请求。
 
+依赖：
+
+```xml
+<properties>
+    <aspectj.version>1.6.12</aspectj.version>
+    <jreflect.version>1.2.0</jreflect.version>
+    <fastjson.version>1.2.28</fastjson.version>
+</properties>
+
+<dependency>
+    <groupId>org.aspectj</groupId>
+    <artifactId>aspectjweaver</artifactId>
+    <version>${aspectj.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.aspectj</groupId>
+    <artifactId>aspectjrt</artifactId>
+    <version>${aspectj.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.fanlychie</groupId>
+    <artifactId>jreflect</artifactId>
+    <version>${jreflect.version}</version>
+</dependency>
+<dependency>
+    <groupId>com.alibaba</groupId>
+    <artifactId>fastjson</artifactId>
+    <version>${fastjson.version}</version>
+</dependency>
+```
+
 使用注解的方式，通过标注在字段属性上，支持的校验注解有：
+
+### @Valid
+
+唯一一个方法参数的注解，表示验证此参数对象
 
 ### @Alphabetic
 
@@ -551,3 +586,137 @@ Not Null
 ### @SafeHtml
 
 安全的HTML, 仅当标注在 {@link java.lang.CharSequence} 类型的属性时进行值的验证和矫正
+
+使用校验时，先在 spring 配置文件中注册注解处理器：
+
+```xml
+<bean class="org.fanlychie.commons.web.spring.validator.AnnotationHandlerRegistry" />
+```
+
+假设我们用 Response 对象统一响应客户端JSON数据请求：
+
+```java
+public class Response {
+
+    private boolean success;
+
+    private Object data;
+
+    private String errmsg;
+
+    public Response(String errmsg) {
+        this.success = false;
+        this.errmsg = errmsg;
+    }
+
+    public Response(Object data) {
+        this.success = true;
+        this.data = data;
+    }
+
+    public boolean isSuccess() {
+        return success;
+    }
+
+    public void setSuccess(boolean success) {
+        this.success = success;
+    }
+
+    public Object getData() {
+        return data;
+    }
+
+    public void setData(Object data) {
+        this.data = data;
+    }
+
+    public String getErrmsg() {
+        return errmsg;
+    }
+
+    public void setErrmsg(String errmsg) {
+        this.errmsg = errmsg;
+    }
+    
+}
+```
+
+基于上面的 UserInputDTO，做如下修改：
+
+```java
+public class UserInputDTO extends InputDTOConverter<User> {
+
+    @NotEmpty(errmsg = "用户名称不能为空", errtype = Response.class)
+    @SafeHtml
+    private String username;
+
+    @Alphanumeric(errmsg = "用户名格式错误，请使用英文字母和数字的组合", errtype = Response.class)
+    @Length(errmsg = "密码长度错误，请输入2-8个字符作为用户名", min = 2, max = 8, errtype = Response.class)
+    private String password;
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+}
+```
+
+若 errtype 统一指向相同的一个类，我们可以使用 @ErrorType 注解代替：
+
+```java
+@ErrorType(Response.class)
+public class UserInputDTO extends InputDTOConverter<User> {
+
+    @NotEmpty(errmsg = "用户名称不能为空")
+    @SafeHtml
+    private String username;
+
+    @Alphanumeric(errmsg = "用户名格式错误，请使用英文字母和数字的组合")
+    @Length(errmsg = "密码长度错误，请输入2-8个字符作为用户名", min = 2, max = 8)
+    private String password;
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+}
+```
+
+@ErrorType 或 errtype 均要求指向的类拥有一个 String 类型参数的构造器。
+
+注册用户的简单示例：
+
+```java
+@ResponseBody
+@RequestMapping(value = "/user/register", method = RequestMethod.POST)
+public String register(@Valid UserInputDTO userInputDTO) {
+    User user = userInputDTO.convert();
+    // do something
+    return "home";
+}
+```
+
