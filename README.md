@@ -481,8 +481,6 @@ UserInputDTO 只接收用户名和密码参数，并且可轻松的转换成目�
 ```java
 public class UserOutputDTO extends OutputDTOConverter<User> {
 
-    private Long id;
-
     private String username;
 
     private Double accountBalance;
@@ -505,3 +503,51 @@ public UserOutputDTO info(Long userId) {
     return new UserOutputDTO(user);
 }
 ```
+
+UserOutputDTO 只输出用户名和账户余额信息，可以向外部隐藏一些不想暴露的属性，并且可轻松的转换（注：此此仅做示例用）。
+
+# spring mvc 请求参数检验
+
+与 Hibernate Validator 注解类似，但又不同于 Hibernate Validator。内部是采用抛异常的机制，在参数校验失败时正常响应客户端的请求。
+
+使用注解的方式，通过标注在字段属性上，支持的校验注解有：
+
+### @Alphabetic
+
+英文字母, 大小写混合, 仅当标注在 {@link java.lang.CharSequence} 类型的属性时进行值的验证
+
+### @Alphanumeric
+
+英文字母(可含大小写)和数字混合, 仅当标注在 {@link java.lang.CharSequence} 类型的属性时进行值的验证
+
+### @ErrorType
+
+唯一一个用于标注在类上的注解，参数值验证失败时的返回值类型
+
+### @Length
+
+长度, 仅当标注在 {@link java.lang.CharSequence} 类型的属性时进行值的验证
+
+### @NotBlank
+
+非空白(除去首尾的空白部分长度不为0), 仅当标注在 {@link java.lang.CharSequence} 类型的属性时进行值的验证
+
+### @NotEmpty
+
+非空, 仅当标注在 {@link java.lang.CharSequence} 类型的属性时进行值的验证
+
+### @NotNull
+
+Not Null
+
+### @Numeric
+
+数字, 仅当标注在 {@link java.lang.CharSequence} 类型的属性时进行值的验证
+
+### @Pattern
+
+正则表达式模式匹配, 仅当标注在 {@link java.lang.CharSequence} 类型的属性时进行值的验证
+
+### @SafeHtml
+
+安全的HTML, 仅当标注在 {@link java.lang.CharSequence} 类型的属性时进行值的验证和矫正
