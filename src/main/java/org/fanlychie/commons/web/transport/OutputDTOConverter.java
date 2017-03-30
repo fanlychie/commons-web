@@ -1,6 +1,5 @@
 package org.fanlychie.commons.web.transport;
 
-import org.fanlychie.commons.web.exception.RuntimeCastException;
 import org.springframework.beans.BeanUtils;
 
 /**
@@ -11,22 +10,8 @@ import org.springframework.beans.BeanUtils;
  */
 public abstract class OutputDTOConverter<I> {
 
-    /**
-     * 业务层处理完用户请求后, 通过调用此方法, 将业务对象 BO 转换为数据传输对象 DTO
-     *
-     * @param input 输入对象, 通常为 BO 对象
-     * @param <O>   期望的 DTO 数据类型
-     * @return 返回数据传输对象
-     */
-    public <O extends OutputDTOConverter> O convert(I input) {
-        O output;
-        try {
-            output = (O) getClass().newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new RuntimeCastException(e);
-        }
-        BeanUtils.copyProperties(input, output);
-        return output;
+    public OutputDTOConverter(I input) {
+        BeanUtils.copyProperties(input, this);
     }
 
 }
