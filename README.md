@@ -275,7 +275,7 @@ GET http://localhost/demo/formalMethod2
 
 对于日期时间字符串，内部是采用日期和时间的组合，因此以上规则同样适用于日期时间字符串类型。
 
-另外，数字与数字之间的分隔符可以任意替换，如：2017-03-30 与 2017/03/30。日期和时间的最后
+另外，数字与数字之间的分隔符可以任意替换，如：2017-03-30 与 2017/03/30，2017年3月30日 与 2017年3月30。
 
 ```xml
 <bean id="conversionService" class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
@@ -295,3 +295,140 @@ GET http://localhost/demo/formalMethod2
 </bean>
 ```
 
+# ServletHandlerInterceptor
+
+继承于 org.springframework.web.servlet.handler.HandlerInterceptorAdapter，用于拦截处理请求。
+
+实现未登录访问站点时跳转到登录页面的简单示例：
+
+```java
+public class AccessInterceptor extends ServletHandlerInterceptor {
+
+    @Override
+    public boolean handle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        if (request.getSession().getAttribute("user") == null) {
+            return sendRedirect(request.getContextPath() + "/user/login");
+        }
+        return true;
+    }
+
+}
+```
+
+spring mvc 配置文件中添加：
+
+```xml
+<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
+    <property name="interceptors">
+        <list>
+            <bean class="com.domain.interceptor.AccessInterceptor">
+                <property name="skipUrls">
+                    <list>
+                        <value>*/user/login*</value>
+                    </list>
+                </property>
+            </bean>
+        </list>
+    </property>
+</bean>
+```
+
+# SimpleHandlerInterceptor
+
+继承于 ServletHandlerInterceptor，是 ServletHandlerInterceptor 的一个简单的实现类。
+
+配置 SimpleHandlerInterceptor 可以使用 RequestContext 和 ResponseContext 提供的服务。具体参考 RequestContext 和 ResponseContext 描述部分。
+
+spring mvc 配置文件中添加：
+
+```xml
+<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
+    <property name="interceptors">
+        <list>
+            <bean class="org.fanlychie.commons.web.spring.servlet.SimpleHandlerInterceptor"/>
+        </list>
+    </property>
+</bean>
+```
+
+# RequestContextListener
+
+配置 SimpleHandlerInterceptor 可以使用 RequestContext 提供的服务。具体参考 RequestContext 描述部分。
+
+在 web.xml 中添加：
+
+```xml
+<listener>
+    <listener-class>org.fanlychie.commons.web.servlet.RequestContextListener</listener-class>
+</listener>
+```
+
+# RequestContext
+
+通过配置 RequestLoggingFilter、RequestContextListener、ServletHandlerInterceptor、SimpleHandlerInterceptor 其中的任意一个时生效。
+
+## getRequest()
+
+获取本次请求的 HttpServletRequest 对象
+
+## getSession()
+
+获取 HttpSession 对象
+
+## getRequestParam(String name)
+
+获取请求参数值
+
+## setSessionAttribute(String name, Object value)
+
+设置会话属性值
+
+## getSessionAttribute(String name)
+
+获取会话属性的值
+
+## getInputStream()
+
+获取输入流对象
+
+## getReader()
+
+获取读对象
+
+## forward(String path)
+
+转发
+
+## getClientIPAddress()
+
+获取客户端 IP 地址
+
+## getServerPath()
+
+获取服务器路径地址
+
+# ResponseContext
+
+通过配置 RequestLoggingFilter、ServletHandlerInterceptor、SimpleHandlerInterceptor 其中的任意一个时生效。
+
+## getResponse()
+
+获取本次请求的 HttpServletResponse 对象
+
+## getOutputStream()
+
+获取输出流
+
+## getWriter()
+
+获取写对象
+
+## write(String text)
+
+向客户端写出响应消息
+
+## sendRedirect(String location)
+
+重定向
+
+# InputDTOConverter
