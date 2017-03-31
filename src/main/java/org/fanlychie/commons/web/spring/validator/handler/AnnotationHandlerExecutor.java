@@ -34,11 +34,11 @@ public final class AnnotationHandlerExecutor {
     }
 
     public static void doExecute(Object bean, boolean applicationJsonResponse) {
+        executeSafeHtmlAnnotation(bean, applicationJsonResponse);
         executeNotNullAnnotation(bean, applicationJsonResponse);
         executeNotEmptyAnnotation(bean, applicationJsonResponse);
         executeNotBlankAnnotation(bean, applicationJsonResponse);
         executeLengthAnnotation(bean, applicationJsonResponse);
-        executeSafeHtmlAnnotation(bean, applicationJsonResponse);
         executePatternAnnotation(bean, applicationJsonResponse);
         executeNumericAnnotation(bean, applicationJsonResponse);
         executeAlphabeticAnnotation(bean, applicationJsonResponse);
