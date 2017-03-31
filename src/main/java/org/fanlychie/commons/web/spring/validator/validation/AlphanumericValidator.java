@@ -10,7 +10,7 @@ public class AlphanumericValidator {
     }
 
     public static boolean isValid(CharSequence charSequence) {
-        return charSequence != null && charSequence.toString().matches("^([a-zA-Z]+\\d+)|(\\d+[a-zA-Z]+)$");
+        return charSequence != null && charSequence.toString().matches("^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]{2,})$");
     }
 
 }
