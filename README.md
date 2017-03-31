@@ -138,7 +138,7 @@ public Object formalMethod2(String name) {
 
 访问示例：
 
-GET http://localhost/demo/testMethod1
+curl -X GET http://localhost/testMethod1
 
 效果示例：
 
@@ -146,7 +146,7 @@ GET http://localhost/demo/testMethod1
 
 访问示例：
 
-GET http://localhost/demo/testMethod2
+curl -X GET http://localhost/testMethod2
 
 效果示例：
 
@@ -154,7 +154,7 @@ GET http://localhost/demo/testMethod2
 
 访问示例：
 
-GET http://localhost/demo/formalMethod1
+curl -X GET http://localhost/formalMethod1
 
 效果示例：
 
@@ -162,7 +162,7 @@ GET http://localhost/demo/formalMethod1
 
 访问示例：
 
-GET http://localhost/demo/formalMethod2
+curl -X GET http://localhost/formalMethod2
 
 效果示例：
 
@@ -604,6 +604,10 @@ public class Response {
 
     private String errmsg;
 
+    public Response() {
+        
+    }
+
     public Response(String errmsg) {
         this.success = false;
         this.errmsg = errmsg;
@@ -614,29 +618,7 @@ public class Response {
         this.data = data;
     }
 
-    public boolean isSuccess() {
-        return success;
-    }
-
-    public void setSuccess(boolean success) {
-        this.success = success;
-    }
-
-    public Object getData() {
-        return data;
-    }
-
-    public void setData(Object data) {
-        this.data = data;
-    }
-
-    public String getErrmsg() {
-        return errmsg;
-    }
-
-    public void setErrmsg(String errmsg) {
-        this.errmsg = errmsg;
-    }
+    // getter and setter
     
 }
 ```
@@ -650,30 +632,22 @@ public class UserInputDTO extends InputDTOConverter<User> {
     @SafeHtml
     private String username;
 
-    @Alphanumeric(errmsg = "用户名格式错误，请使用英文字母和数字的组合", errtype = Response.class)
-    @Length(errmsg = "密码长度错误，请输入2-8个字符作为用户名", min = 2, max = 8, errtype = Response.class)
+    @Alphanumeric(errmsg = "密码格式错误，请使用英文字母和数字的组合", errtype = Response.class)
+    @Length(errmsg = "密码长度错误，请输入6-18个字符作为密码", min = 6, max = 18, errtype = Response.class)
     private String password;
 
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
+    // getter and setter
 
 }
 ```
 
-若 errtype 统一指向相同的一个类，我们可以使用 @ErrorType 注解代替：
+当检验参数不通过时，会向客户端返回 errmsg 信息。errmsg 可以是一个文字描述信息（用于JSON数据的接口），或是一个视图路径如 errmsg = "/error/404"。
+
+在请求参数校验失败时，仅当控制器类标注了 @RestController 注解，或方法标注了 @ResponseBody 注解，校验器会使用 JSON 数据的方式响应客户端，除此之外，均用视图响应客户端。
+
+errtype 是校验失败时响应客户端的错误信息类型，默认是 errtype = String.css。它要求指向的类拥有一个 String 类型参数的构造器，这点很重要。
+
+errtype 在校验对象参数时若统一指向相同的一个类，我们可以使用 @ErrorType 注解代替：
 
 ```java
 @ErrorType(Response.class)
@@ -683,30 +657,16 @@ public class UserInputDTO extends InputDTOConverter<User> {
     @SafeHtml
     private String username;
 
-    @Alphanumeric(errmsg = "用户名格式错误，请使用英文字母和数字的组合")
-    @Length(errmsg = "密码长度错误，请输入2-8个字符作为用户名", min = 2, max = 8)
+    @Alphanumeric(errmsg = "密码格式错误，请使用英文字母和数字的组合")
+    @Length(errmsg = "密码长度错误，请输入6-18个字符作为密码", min = 6, max = 18)
     private String password;
 
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
+    // getter and setter
 
 }
 ```
 
-@ErrorType 或 errtype 均要求指向的类拥有一个 String 类型参数的构造器。
+@SafeHtml 注解提供两种策略，一种是清空所有的脚本内容仅保留HTML文本部分（默认策略），另一种是直接转义符号，使用时配置 @SafeHtml(Strategy.ESCAPE)。
 
 注册用户的简单示例：
 
@@ -715,8 +675,65 @@ public class UserInputDTO extends InputDTOConverter<User> {
 @RequestMapping(value = "/user/register", method = RequestMethod.POST)
 public String register(@Valid UserInputDTO userInputDTO) {
     User user = userInputDTO.convert();
+    user.setId(100001L);
     // do something
-    return "home";
+    return new Response(user.getId());
 }
 ```
 
+访问示例：
+
+curl -X POST http://localhost/user/register --data-urlencode "username=&password=123"
+
+效果示例：
+
+{
+  "errmsg": "用户名称不能为空",
+  "success": false
+}
+
+
+访问示例：
+
+curl -X POST http://localhost/user/register --data-urlencode "username=fanlychie&password=123"
+
+效果示例：
+
+{
+  "errmsg": "密码长度错误，请输入6-18个字符作为密码",
+  "success": false
+}
+
+访问示例：
+
+curl -X POST http://localhost/user/register --data-urlencode "username=fanlychie&password=123!#321"
+
+效果示例：
+
+{
+  "errmsg": "密码格式错误，请使用英文字母和数字的组合",
+  "success": false
+}
+
+访问示例：
+
+curl -X POST http://localhost/user/register --data-urlencode "username=<script>alert('我是一个弹框');</script>&password=123654abc"
+
+效果示例：
+
+{
+  "errmsg": "用户名称不能为空",
+  "success": false
+}
+
+访问示例：
+
+curl -X POST http://localhost/user/register --data-urlencode "username=<script>alert('我是一个弹框');</script><p>我是一个段落</p>&password=123654abc"
+
+效果示例：
+
+{
+  "success": true,
+  "data": "你注册的用户名是：我是一个段落",
+  "errmsg": null
+}
