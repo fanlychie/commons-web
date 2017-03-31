@@ -1,6 +1,23 @@
 # commons-web
 应用于 Java Web 开发
 
+# 下载依赖
+
+```xml
+<repositories>
+	<repository>
+		<id>github-maven-repo</id>
+		<url>https://raw.github.com/fanlychie/maven-repo/releases</url>
+	</repository>
+</repositories>
+
+<dependency>
+	<groupId>org.fanlychie</groupId>
+	<artifactId>commons-web</artifactId>
+	<version>1.0.0</version>
+</dependency>
+```
+
 # 将客户端请求记录到日志
 
 在 web.xml 添加如下配置：
