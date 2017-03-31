@@ -33,7 +33,7 @@ public final class AnnotationHandlerExecutor {
 
     }
 
-    public static void doExecute(Object bean, boolean applicationJsonResponse) {
+    public static void doExecute(final Object bean, final boolean applicationJsonResponse) {
         executeSafeHtmlAnnotation(bean, applicationJsonResponse);
         executeNotNullAnnotation(bean, applicationJsonResponse);
         executeNotEmptyAnnotation(bean, applicationJsonResponse);
@@ -45,7 +45,7 @@ public final class AnnotationHandlerExecutor {
         executeAlphanumericAnnotation(bean, applicationJsonResponse);
     }
 
-    private static void executeNotNullAnnotation(Object bean, boolean applicationJsonResponse) {
+    private static void executeNotNullAnnotation(final Object bean, final boolean applicationJsonResponse) {
         new AnnotationHandlerRunner<NotNull>(bean) {
             @Override
             protected void run(BeanDescriptor beanDescriptor, String name, Object value, Class<?> type, NotNull annotation, Class<?> beanErrorType) {
@@ -56,7 +56,7 @@ public final class AnnotationHandlerExecutor {
         }.start();
     }
 
-    private static void executeNotEmptyAnnotation(Object bean, boolean applicationJsonResponse) {
+    private static void executeNotEmptyAnnotation(final Object bean, final boolean applicationJsonResponse) {
         new AnnotationHandlerRunner<NotEmpty>(bean) {
             @Override
             protected void run(BeanDescriptor beanDescriptor, String name, Object value, Class<?> type, NotEmpty annotation, Class<?> beanErrorType) {
@@ -69,7 +69,7 @@ public final class AnnotationHandlerExecutor {
         }.start();
     }
 
-    private static void executeNotBlankAnnotation(Object bean, boolean applicationJsonResponse) {
+    private static void executeNotBlankAnnotation(final Object bean, final boolean applicationJsonResponse) {
         new AnnotationHandlerRunner<NotBlank>(bean) {
             @Override
             protected void run(BeanDescriptor beanDescriptor, String name, Object value, Class<?> type, NotBlank annotation, Class<?> beanErrorType) {
@@ -82,7 +82,7 @@ public final class AnnotationHandlerExecutor {
         }.start();
     }
 
-    private static void executeAlphabeticAnnotation(Object bean, boolean applicationJsonResponse) {
+    private static void executeAlphabeticAnnotation(final Object bean, final boolean applicationJsonResponse) {
         new AnnotationHandlerRunner<Alphabetic>(bean) {
             @Override
             protected void run(BeanDescriptor beanDescriptor, String name, Object value, Class<?> type, Alphabetic annotation, Class<?> beanErrorType) {
@@ -95,7 +95,7 @@ public final class AnnotationHandlerExecutor {
         }.start();
     }
 
-    private static void executeAlphanumericAnnotation(Object bean, boolean applicationJsonResponse) {
+    private static void executeAlphanumericAnnotation(final Object bean, final boolean applicationJsonResponse) {
         new AnnotationHandlerRunner<Alphanumeric>(bean) {
             @Override
             protected void run(BeanDescriptor beanDescriptor, String name, Object value, Class<?> type, Alphanumeric annotation, Class<?> beanErrorType) {
@@ -108,7 +108,7 @@ public final class AnnotationHandlerExecutor {
         }.start();
     }
 
-    private static void executeLengthAnnotation(Object bean, boolean applicationJsonResponse) {
+    private static void executeLengthAnnotation(final Object bean, final boolean applicationJsonResponse) {
         new AnnotationHandlerRunner<Length>(bean) {
             @Override
             protected void run(BeanDescriptor beanDescriptor, String name, Object value, Class<?> type, Length annotation, Class<?> beanErrorType) {
@@ -121,7 +121,7 @@ public final class AnnotationHandlerExecutor {
         }.start();
     }
 
-    private static void executeNumericAnnotation(Object bean, boolean applicationJsonResponse) {
+    private static void executeNumericAnnotation(final Object bean, final boolean applicationJsonResponse) {
         new AnnotationHandlerRunner<Numeric>(bean) {
             @Override
             protected void run(BeanDescriptor beanDescriptor, String name, Object value, Class<?> type, Numeric annotation, Class<?> beanErrorType) {
@@ -134,7 +134,7 @@ public final class AnnotationHandlerExecutor {
         }.start();
     }
 
-    private static void executePatternAnnotation(Object bean, boolean applicationJsonResponse) {
+    private static void executePatternAnnotation(final Object bean, final boolean applicationJsonResponse) {
         new AnnotationHandlerRunner<Pattern>(bean) {
             @Override
             protected void run(BeanDescriptor beanDescriptor, String name, Object value, Class<?> type, Pattern annotation, Class<?> beanErrorType) {
@@ -147,7 +147,7 @@ public final class AnnotationHandlerExecutor {
         }.start();
     }
 
-    private static void executeSafeHtmlAnnotation(Object bean, boolean applicationJsonResponse) {
+    private static void executeSafeHtmlAnnotation(final Object bean, final boolean applicationJsonResponse) {
         new AnnotationHandlerRunner<SafeHtml>(bean) {
             @Override
             protected void run(BeanDescriptor beanDescriptor, String name, Object value, Class<?> type, SafeHtml annotation, Class<?> beanErrorType) {
