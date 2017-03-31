@@ -5,16 +5,16 @@
 
 ```xml
 <repositories>
-	<repository>
-		<id>github-maven-repo</id>
-		<url>https://raw.github.com/fanlychie/maven-repo/releases</url>
-	</repository>
+    <repository>
+        <id>github-maven-repo</id>
+        <url>https://raw.github.com/fanlychie/maven-repo/releases</url>
+    </repository>
 </repositories>
 
 <dependency>
-	<groupId>org.fanlychie</groupId>
-	<artifactId>commons-web</artifactId>
-	<version>1.0.0</version>
+    <groupId>org.fanlychie</groupId>
+    <artifactId>commons-web</artifactId>
+    <version>1.0.0</version>
 </dependency>
 ```
 
@@ -768,14 +768,14 @@ curl -X POST http://localhost/user/register --data-urlencode "username=<script>a
 </properties>
 
 <dependency>
-	<groupId>org.springframework</groupId>
-	<artifactId>spring-context-support</artifactId>
-	<version>${spring.version}</version>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-context-support</artifactId>
+    <version>${spring.version}</version>
 </dependency>
 <dependency>
-	<groupId>org.quartz-scheduler</groupId>
-	<artifactId>quartz</artifactId>
-	<version>${quartz.version}</version>
+    <groupId>org.quartz-scheduler</groupId>
+    <artifactId>quartz</artifactId>
+    <version>${quartz.version}</version>
 </dependency>
 ```
 
@@ -783,21 +783,21 @@ curl -X POST http://localhost/user/register --data-urlencode "username=<script>a
 
 ```xml
 <bean class="org.fanlychie.commons.web.spring.scheduling.Scheduler">
-	<constructor-arg>
-		<list>
-			<bean class="org.fanlychie.commons.web.spring.scheduling.CronJob" p:cronExpression="*/5 * * * * ?">
-				<constructor-arg>
-					<bean class="com.domain.MyJob">
-						<property name="dataMap">
-							<map>
-								<entry key="name" value="fanlychie" />
-							</map>
-						</property>
-					</bean>
-				</constructor-arg>
-			</bean>
-		</list>
-	</constructor-arg>
+    <constructor-arg>
+        <list>
+            <bean class="org.fanlychie.commons.web.spring.scheduling.CronJob" p:cronExpression="*/5 * * * * ?">
+                <constructor-arg>
+                    <bean class="com.domain.MyJob">
+                        <property name="dataMap">
+                            <map>
+                                <entry key="name" value="fanlychie" />
+                            </map>
+                        </property>
+                    </bean>
+                </constructor-arg>
+            </bean>
+        </list>
+    </constructor-arg>
 </bean>
 ```
 
