@@ -724,11 +724,11 @@ curl -X POST http://localhost/user/register --data-urlencode "username=<script>a
 {
   "errmsg": "用户名称不能为空",
   "success": false
-}
+}（注：脚本内容已经被清空）
 
 访问示例：
 
-curl -X POST http://localhost/user/register --data-urlencode "username=<script>alert('我是一个弹框');</script><p>我是一个段落</p>&password=123654abc"
+curl -X POST http://localhost/user/register --data-urlencode "username=<script>alert('我是一个弹框');</script>&lt;p&gt;我是一个段落&lt;/p&gt;&password=123654abc"
 
 效果示例：
 
