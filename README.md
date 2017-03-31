@@ -737,3 +737,67 @@ curl -X POST http://localhost/user/register --data-urlencode "username=<script>a
   "data": "你注册的用户名是：我是一个段落",
   "errmsg": null
 }
+
+# spring 计划任务
+
+内部使用 Quartz，意在简化XML配置。
+
+依赖：
+
+```xml
+<properties>
+    <quartz.version>2.2.3</quartz.version>
+    <spring.version>4.2.5.RELEASE</spring.version>
+</properties>
+
+<dependency>
+	<groupId>org.springframework</groupId>
+	<artifactId>spring-context-support</artifactId>
+	<version>${spring.version}</version>
+</dependency>
+<dependency>
+	<groupId>org.quartz-scheduler</groupId>
+	<artifactId>quartz</artifactId>
+	<version>${quartz.version}</version>
+</dependency>
+```
+
+在 spring 配置文件中添加：
+
+```xml
+<bean class="org.fanlychie.commons.web.spring.scheduling.Scheduler">
+	<constructor-arg>
+		<list>
+			<bean class="org.fanlychie.commons.web.spring.scheduling.CronJob" p:cronExpression="*/5 * * * * ?">
+				<constructor-arg>
+					<bean class="com.domain.MyJob">
+						<property name="dataMap">
+							<map>
+								<entry key="name" value="fanlychie" />
+							</map>
+						</property>
+					</bean>
+				</constructor-arg>
+			</bean>
+		</list>
+	</constructor-arg>
+</bean>
+```
+
+```java
+public class MyJob extends AbstractJob {
+
+    private Map<String, Object> dataMap;
+
+    @Override
+    public void execute() {
+        System.out.println("-------- " + dataMap.get("name") + " --------");
+    }
+
+    public void setDataMap(Map<String, Object> dataMap) {
+        this.dataMap = dataMap;
+    }
+
+}
+```
+
