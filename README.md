@@ -572,9 +572,21 @@ UserOutputDTO 只输出用户名和账户余额信息，可以向外部隐藏一
 
 英文字母(可含大小写)和数字混合, 仅当标注在 {@link java.lang.CharSequence} 类型的属性时进行值的验证
 
+### @Decimal
+
+小数, 仅当标注在 float/Float, double/Double 类型的属性时进行值的验证
+
+### @Email
+
+电子邮箱, 仅当标注在 {@link java.lang.CharSequence} 类型的属性时进行值的验证
+
 ### @ErrorType
 
 唯一一个用于标注在类上的注解，参数值验证失败时的返回值类型
+
+### @Int
+
+整数, 仅当标注在 byte/Byte, short/Short, int/Integer, long/Long 类型的属性时进行值的验证
 
 ### @Length
 
@@ -603,6 +615,10 @@ Not Null
 ### @SafeHtml
 
 安全的HTML, 仅当标注在 {@link java.lang.CharSequence} 类型的属性时进行值的验证和矫正
+
+### @URL
+
+网络地址, 仅当标注在 {@link java.lang.CharSequence} 类型的属性时进行值的验证
 
 使用校验时，先在 spring 配置文件中注册注解处理器：
 
