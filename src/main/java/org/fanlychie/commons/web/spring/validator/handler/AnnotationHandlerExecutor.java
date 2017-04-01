@@ -6,7 +6,7 @@ import org.fanlychie.commons.web.spring.validator.constraint.Alphabetic;
 import org.fanlychie.commons.web.spring.validator.constraint.Alphanumeric;
 import org.fanlychie.commons.web.spring.validator.constraint.Decimal;
 import org.fanlychie.commons.web.spring.validator.constraint.Email;
-import org.fanlychie.commons.web.spring.validator.constraint.Integer;
+import org.fanlychie.commons.web.spring.validator.constraint.Int;
 import org.fanlychie.commons.web.spring.validator.constraint.Length;
 import org.fanlychie.commons.web.spring.validator.constraint.NotBlank;
 import org.fanlychie.commons.web.spring.validator.constraint.NotEmpty;
@@ -19,7 +19,7 @@ import org.fanlychie.commons.web.spring.validator.validation.AlphabeticValidator
 import org.fanlychie.commons.web.spring.validator.validation.AlphanumericValidator;
 import org.fanlychie.commons.web.spring.validator.validation.DecimalValidator;
 import org.fanlychie.commons.web.spring.validator.validation.EmailValidator;
-import org.fanlychie.commons.web.spring.validator.validation.IntegerValidator;
+import org.fanlychie.commons.web.spring.validator.validation.IntValidator;
 import org.fanlychie.commons.web.spring.validator.validation.LengthValidator;
 import org.fanlychie.commons.web.spring.validator.validation.NotBlankValidator;
 import org.fanlychie.commons.web.spring.validator.validation.NotEmptyValidator;
@@ -79,17 +79,17 @@ public final class AnnotationHandlerExecutor {
         if (hasAnnotation(bean, Alphanumeric.class)) {
             executeAlphanumericAnnotation(bean, applicationJsonResponse);
         }
-        if (hasAnnotation(bean, Decimal.class)) {
-            executeDecimalhAnnotation(bean, applicationJsonResponse);
+        if (hasAnnotation(bean, Int.class)) {
+            executeIntegerAnnotation(bean, applicationJsonResponse);
         }
         if (hasAnnotation(bean, Email.class)) {
             executeEmailAnnotation(bean, applicationJsonResponse);
         }
-        if (hasAnnotation(bean, Integer.class)) {
-            executeIntegerAnnotation(bean, applicationJsonResponse);
-        }
         if (hasAnnotation(bean, URL.class)) {
             executeURLAnnotation(bean, applicationJsonResponse);
+        }
+        if (hasAnnotation(bean, Decimal.class)) {
+            executeDecimalhAnnotation(bean, applicationJsonResponse);
         }
     }
 
@@ -161,7 +161,7 @@ public final class AnnotationHandlerExecutor {
             @Override
             protected void run(BeanDescriptor beanDescriptor, String name, Object value, Class<?> type, Decimal annotation, Class<?> beanErrorType) {
                 if (type == float.class || type == double.class || type == Float.class || type == Double.class) {
-                    if (!DecimalValidator.isValid(value.toString(), annotation)) {
+                    if (value == null || !DecimalValidator.isValid(value.toString(), annotation)) {
                         throw argumentVaildException(annotation.errmsg(), annotation.errtype(), beanErrorType, applicationJsonResponse);
                     }
                 }
@@ -210,12 +210,12 @@ public final class AnnotationHandlerExecutor {
     }
 
     private static void executeIntegerAnnotation(final Object bean, final boolean applicationJsonResponse) {
-        new AnnotationHandlerRunner<Integer>(bean) {
+        new AnnotationHandlerRunner<Int>(bean) {
             @Override
-            protected void run(BeanDescriptor beanDescriptor, String name, Object value, Class<?> type, Integer annotation, Class<?> beanErrorType) {
+            protected void run(BeanDescriptor beanDescriptor, String name, Object value, Class<?> type, Int annotation, Class<?> beanErrorType) {
                 if (type == byte.class || type == short.class || type == int.class || type == long.class ||
                         type == Byte.class || type == Short.class || type == java.lang.Integer.class || type == Long.class) {
-                    if (!IntegerValidator.isValid((Number) value, annotation)) {
+                    if (!IntValidator.isValid((Number) value, annotation)) {
                         throw argumentVaildException(annotation.errmsg(), annotation.errtype(), beanErrorType, applicationJsonResponse);
                     }
                 }

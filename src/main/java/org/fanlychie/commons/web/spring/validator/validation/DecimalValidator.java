@@ -14,6 +14,9 @@ public class DecimalValidator {
     }
 
     public static boolean isValid(String strValue, Decimal decimal) {
+        if (strValue == null) {
+            return false;
+        }
         BigDecimal bd0 = new BigDecimal(strValue);
         BigDecimal bd1 = new BigDecimal(String.valueOf(decimal.min()));
         BigDecimal bd2 = new BigDecimal(String.valueOf(decimal.max()));
