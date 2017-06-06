@@ -3,6 +3,7 @@ package org.fanlychie.commons.web.spring.converter;
 import org.fanlychie.commons.web.exception.ParseStringToDateException;
 import org.fanlychie.commons.web.exception.RuntimeCastException;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.util.StringUtils;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -30,6 +31,9 @@ public class StringToDateConverter implements Converter<String, Date> {
 
     @Override
     public Date convert(String source) {
+        if (StringUtils.isEmpty(source)) {
+            return null;
+        }
         Matcher matcher = DATETIME_STRING_REGEX.matcher(source);
         if (matcher.matches()) {
             String pattern = matcher.replaceAll("yyyy$2MM$4dd$6$7HH$9mm$11ss$13");
