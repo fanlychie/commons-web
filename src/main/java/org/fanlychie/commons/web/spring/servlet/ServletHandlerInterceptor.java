@@ -35,10 +35,7 @@ public abstract class ServletHandlerInterceptor extends HandlerInterceptorAdapte
         RequestContext.setLocal(request);
         ResponseContext.setLocal(response);
         String uri = request.getRequestURI();
-        if (skipUrl(uri) || !interceptUrl(uri)) {
-            return true;
-        }
-        return handle(request, response, handler);
+        return skipUrl(uri) || !interceptUrl(uri) ? true : handle(request, response, handler);
     }
 
     /**
@@ -66,7 +63,7 @@ public abstract class ServletHandlerInterceptor extends HandlerInterceptorAdapte
      * @return 固定返回 false
      * @throws Exception
      */
-    protected boolean forward(String path) throws Exception {
+    protected boolean forward(String path) {
         RequestContext.forward(path);
         return false;
     }
@@ -78,8 +75,19 @@ public abstract class ServletHandlerInterceptor extends HandlerInterceptorAdapte
      * @return 固定返回 false
      * @throws Exception
      */
-    protected boolean sendRedirect(String location) throws Exception {
+    protected boolean sendRedirect(String location) {
         ResponseContext.sendRedirect(location);
+        return false;
+    }
+
+    /**
+     * 向客户端写出JSON格式的数据响应
+     *
+     * @param jsonStr JSON格式字符串
+     * @return 固定返回 false
+     */
+    protected boolean returnJson(String jsonStr) {
+        ResponseContext.write(jsonStr);
         return false;
     }
 
