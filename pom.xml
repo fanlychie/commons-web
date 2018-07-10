@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.fanlychie</groupId>
     <artifactId>commons-web</artifactId>
-    <version>1.0.3</version>
+    <version>1.0.4</version>
     <packaging>jar</packaging>
     <name>commons-web</name>
     <url>http://maven.apache.org</url>
@@ -16,7 +16,7 @@
     <properties>
         <quartz.version>2.2.3</quartz.version>
         <aspectj.version>1.6.12</aspectj.version>
-        <jreflect.version>1.2.0</jreflect.version>
+        <jreflect.version>1.2.1</jreflect.version>
         <spring.version>4.2.5.RELEASE</spring.version>
         <servlet.api.version>2.5</servlet.api.version>
         <fastjson.version>1.2.28</fastjson.version>
